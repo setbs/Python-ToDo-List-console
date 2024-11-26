@@ -2,37 +2,54 @@ while True:
     user_action = input("Type add, show, edit, complete or exit: ")
     user_action = user_action.strip()
 
-    match user_action:
-        case "add":
-            todo = input("Enter TODO: ") + "\n"
-
-            file = open('files/todos.txt', 'r')
+    if "add" in user_action:
+        todo = user_action[4:] + '\n'
+        with open('files/todos.txt', 'r') as file:
             todos = file.readlines()
-            file.close()
 
-            todos.append(todo)
 
-            file = open('files/todos.txt', 'w')
+        todos.append(todo)
+
+        with open('files/todos.txt', 'w') as file:
             file.writelines(todos)
-            file.close()
-        case "show":
-            file = open('files/todos.txt', 'r')
+    elif "show" in user_action:
+        print(f'Here your things to do: \n {'-' * 20}')
+        with open('files/todos.txt', 'r') as file:
             todos = file.readlines()
-            file.close()
 
-            for index, item in enumerate(todos):
-                row = f"{index + 1}-{item}"
-                print(row)
-        case "edit":
-            number = int(input("Number of todo to edit: "))
-            number = number - 1
-            new_todo = input("Enter new todo: ")
-            todos[number] = new_todo
-        case "complete":
-            number = int(input("Number of the todo to complete: "))
-            todos.pop(number- 1)
-        case 'exit':
-            break
 
+        for index, item in enumerate(todos):
+            row = f"{index + 1}-{item.strip('\n')}"
+            print(row)
+        print('-' * 20)
+    elif "edit" in user_action:
+        number = int(user_action[5:])
+        with open('files/todos.txt', 'r') as file:
+            todos = file.readlines()
+        old_todo = todos[number - 1].strip('\n')
+        new_todo = input("Enter new todo: ")
+        todos[number - 1] = new_todo + '\n'
+
+        with open('files/todos.txt', 'w') as file:
+            file.writelines(todos)
+        print(f"{'-' * 20}\nYour todo {old_todo} was repased to {new_todo}\n{'-' * 20}")
+    elif "complete" in user_action:
+        number = int(user_action[9:])
+        with open('files/todos.txt', 'r') as file:
+            todos = file.readlines()
+
+        todo_to_remove = todos[number - 1].strip('\n')
+        todos.pop(number - 1)
+
+
+        with open('files/todos.txt', 'w') as file:
+            file.writelines(todos)
+
+        print(f'Todo "{todo_to_remove}" was removed from the list')
+
+    elif 'exit' in user_action:
+        break
+    else:
+        print("Command is not valid")
 
 print("Bye!!")
